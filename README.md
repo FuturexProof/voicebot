@@ -14,6 +14,30 @@ Sprachgesteuerter Registrierungs-Assistent auf Basis von Microsoft Azure. Nutzer
 
 ---
 
+## Versionen & Versionswechsel
+
+| Branch | Beschreibung | Tag |
+|---|---|---|
+| `main` | Stabile Basisversion | `v1.0-stable` |
+| `v2-improvements` | Mehrsprachigkeit, adaptiver Dialog, UI-Redesign | — |
+
+```bash
+# Zur stabilen v1.0 wechseln
+git checkout main && ./voicebot-deploy.sh deploy
+
+# Zur v2 mit allen Verbesserungen wechseln
+git checkout v2-improvements && ./voicebot-deploy.sh deploy
+```
+
+### Neu in v2
+
+- **Mehrsprachigkeit (DE / EN):** Automatische Spracherkennung aus dem ersten Satz; Umschalter `🇩🇪 / 🇬🇧` im Chat; förmlich/informell-Erkennung (Grosses „Sie")
+- **Adaptiver Dialog:** Validatoren geben beim 2. Fehler (`ctx.attemptCount`) detailliertere Hilfehinweise statt kurzer Fehlermeldung
+- **UI-Redesign:** Dunkler Hintergrund, Card-Layout, Azure-Farbschema, Verbindungs-Statusindikator, Lade-Animation
+- **i18n-Modul:** `src/i18n/messages.js` — alle Texte zentral in DE, DE-formal und EN
+
+---
+
 ## Architektur-Überblick
 
 ```
@@ -110,24 +134,27 @@ voicebot/
 ├── index.js                      Einstiegspunkt (Server, Adapter, Routen)
 ├── package.json
 ├── public/
-│   └── index.html                WebChat-Frontend
+│   └── index.html                WebChat-Frontend (v2: Redesign + Sprachumschalter)
 ├── src/
-│   ├── bot.js                    ActivityHandler, Intent-Routing
+│   ├── bot.js                    ActivityHandler, Spracherkennung, Intent-Routing
+│   ├── i18n/
+│   │   └── messages.js           Alle UI-Texte (DE, DE-formal, EN)   ← neu in v2
 │   ├── admin/
 │   │   ├── routes.js             Admin-API (users, export, stats)
 │   │   └── dashboard.html        Admin-Dashboard
 │   ├── dialogs/
-│   │   ├── registrationDialog.js 10-Schritt-WaterfallDialog
-│   │   └── validators.js         Validierung + normalize()
+│   │   ├── registrationDialog.js 10-Schritt-WaterfallDialog (v2: i18n, 2× ConfirmPrompt)
+│   │   └── validators.js         Validierung + normalize() + adaptive Hints
 │   └── services/
-│       ├── cluRecognizer.js      CLU-Client + Regel-Fallback
+│       ├── cluRecognizer.js      CLU-Client + DE/EN Regel-Fallback
 │       ├── secretsClient.js      Key Vault Secret-Loader
 │       └── userRepository.js     MSSQL CRUD
 ├── voicebot-deploy.sh            Cloud-Deploy + Diagnose
 ├── voicebot-local.sh             Lokales Test-Setup
 ├── docs/
 │   ├── ARCHITEKTUR.md            Architektur + Sequenzdiagramme
-│   └── INSTALLATIONSANLEITUNG.md Schritt-für-Schritt Azure-Setup
+│   ├── INSTALLATIONSANLEITUNG.md Schritt-für-Schritt Azure-Setup
+│   └── PRAESENTATION.html        15-Min-Präsentation (Browser)
 └── .github/
     └── workflows/
         └── deploy.yml            CI/CD GitHub Actions
