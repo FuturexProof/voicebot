@@ -2,7 +2,7 @@
 
 **Advanced Topics in Cloud Computing — Sommersemester 2026**  
 Technische Hochschule Brandenburg · Prof. Dr.-Ing. Florian Marquardt  
-Bearbeiter: Martin Krüger
+Bearbeiter: MK
 
 ---
 
