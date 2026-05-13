@@ -2,7 +2,8 @@ const {
   ComponentDialog, WaterfallDialog,
   TextPrompt, DateTimePrompt, ConfirmPrompt
 } = require('botbuilder-dialogs');
-const v = require('./validators');
+const v    = require('./validators');
+const msgs = require('../i18n/messages');
 
 const REG_DIALOG = 'REG_DIALOG';
 const WATERFALL  = 'WATERFALL';
@@ -14,14 +15,16 @@ class RegistrationDialog extends ComponentDialog {
 
     this.addDialog(new TextPrompt('firstName', v.nameValidator));
     this.addDialog(new TextPrompt('lastName',  v.nameValidator));
-    this.addDialog(new DateTimePrompt('dob',   v.dobValidator, 'de-DE'));
+    this.addDialog(new DateTimePrompt('dob-de', v.dobValidator, 'de-DE'));
+    this.addDialog(new DateTimePrompt('dob-en', v.dobValidator, 'en-US'));
     this.addDialog(new TextPrompt('email',     v.emailValidator));
     this.addDialog(new TextPrompt('phone',     v.phoneValidator));
     this.addDialog(new TextPrompt('street',    v.streetValidator));
     this.addDialog(new TextPrompt('zip',       v.zipValidator));
     this.addDialog(new TextPrompt('city'));
     this.addDialog(new TextPrompt('country'));
-    this.addDialog(new ConfirmPrompt('confirm', null, 'de-DE'));
+    this.addDialog(new ConfirmPrompt('confirm-de', null, 'de-DE'));
+    this.addDialog(new ConfirmPrompt('confirm-en', null, 'en-US'));
 
     this.addDialog(new WaterfallDialog(WATERFALL, [
       this.askFirstName.bind(this),
@@ -40,70 +43,85 @@ class RegistrationDialog extends ComponentDialog {
     this.initialDialogId = WATERFALL;
   }
 
-  async askFirstName(step) {
-    await step.context.sendActivity('Hallo! Ich helfe dir beim Anlegen deines Accounts. Du kannst jederzeit "abbrechen" sagen.');
-    return step.prompt('firstName', 'Wie ist dein Vorname?');
+  // Hilfsmethode: Spracheinstellungen aus dem ersten Schritt übernehmen
+  _t(step) {
+    return msgs.get(step.values.lang || 'de', step.values.formal || false);
   }
+
+  async askFirstName(step) {
+    // Sprache und Ton aus dialogOptions übernehmen (gesetzt von bot.js)
+    const opts = step.options || {};
+    step.values.lang   = opts.lang   || 'de';
+    step.values.formal = opts.formal || false;
+    const t = this._t(step);
+    await step.context.sendActivity(t.dialogStart);
+    return step.prompt('firstName', t.askFirst);
+  }
+
   async askLastName(step) {
     step.values.firstName = v.normalize(step.result);
-    return step.prompt('lastName', `Hallo ${step.values.firstName}! Und dein Nachname?`);
+    return step.prompt('lastName', this._t(step).askLast(step.values.firstName));
   }
+
   async askDob(step) {
     step.values.lastName = v.normalize(step.result);
-    return step.prompt('dob', 'Dein Geburtsdatum bitte (z.B. "3. Mai 1990").');
+    const dobId = step.values.lang === 'en' ? 'dob-en' : 'dob-de';
+    return step.prompt(dobId, this._t(step).askDob);
   }
+
   async askEmail(step) {
     step.values.dob = step.result[0].value;
-    return step.prompt('email', 'Welche E-Mail-Adresse möchtest du hinterlegen?');
+    return step.prompt('email', this._t(step).askEmail);
   }
+
   async askPhone(step) {
     step.values.email = v.normalize(step.result);
-    return step.prompt('phone', 'Und deine Telefonnummer?');
+    return step.prompt('phone', this._t(step).askPhone);
   }
+
   async askStreet(step) {
     step.values.phone = v.normalize(step.result);
-    return step.prompt('street', 'Straße und Hausnummer bitte.');
+    return step.prompt('street', this._t(step).askStreet);
   }
+
   async askZip(step) {
     step.values.street = v.normalize(step.result);
-    return step.prompt('zip', 'Deine Postleitzahl?');
+    return step.prompt('zip', this._t(step).askZip);
   }
+
   async askCity(step) {
     step.values.zip = v.normalize(step.result);
-    return step.prompt('city', 'In welcher Stadt wohnst du?');
+    return step.prompt('city', this._t(step).askCity);
   }
+
   async askCountry(step) {
     step.values.city = v.normalize(step.result);
-    return step.prompt('country', 'Und das Land?');
+    return step.prompt('country', this._t(step).askCountry);
   }
+
   async summary(step) {
     step.values.country = v.normalize(step.result);
-    const u = step.values;
-    const dob = new Date(u.dob).toLocaleDateString('de-DE');
-    const text =
-      `Bitte bestätige deine Angaben:\n\n` +
-      `• Name: ${u.firstName} ${u.lastName}\n` +
-      `• Geburtsdatum: ${dob}\n` +
-      `• E-Mail: ${u.email}\n` +
-      `• Telefon: ${u.phone}\n` +
-      `• Adresse: ${u.street}, ${u.zip} ${u.city}, ${u.country}\n\n` +
-      `Sind die Daten korrekt?`;
-    return step.prompt('confirm', text);
+    const u   = step.values;
+    const dob = new Date(u.dob).toLocaleDateString(u.lang === 'en' ? 'en-US' : 'de-DE');
+    const confirmId = u.lang === 'en' ? 'confirm-en' : 'confirm-de';
+    return step.prompt(confirmId, this._t(step).summary(u, dob));
   }
+
   async persist(step) {
     if (!step.result) {
-      await step.context.sendActivity('Okay, dann beginnen wir von vorn.');
-      return step.replaceDialog(REG_DIALOG);
+      await step.context.sendActivity(this._t(step).summaryRetry);
+      return step.replaceDialog(REG_DIALOG, {
+        lang:   step.values.lang,
+        formal: step.values.formal
+      });
     }
     try {
       await this.userRepo.insert(step.values);
-      await step.context.sendActivity(`Super, ${step.values.firstName}! Dein Account wurde angelegt. Willkommen!`);
+      await step.context.sendActivity(this._t(step).saved(step.values.firstName));
     } catch (err) {
       console.error('DB-Fehler:', err);
-      const dup = err.message && err.message.includes('UNIQUE');
-      const msg = dup
-        ? 'Diese E-Mail-Adresse ist bereits registriert.'
-        : 'Speichern hat leider nicht geklappt. Bitte später nochmal.';
+      const t   = this._t(step);
+      const msg = err.message?.includes('UNIQUE') ? t.dupEmail : t.saveError;
       await step.context.sendActivity(msg);
     }
     return step.endDialog();

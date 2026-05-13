@@ -1,39 +1,403 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <title>Sprachbot — Registrierung</title>
-  <style>
-    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; background: #f0f0f0; }
-    h1 { color: #333; text-align: center; }
-    #webchat { height: 600px; max-width: 500px; margin: 0 auto;
-               box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 8px;
-               overflow: hidden; background: white; }
-    .hint { text-align: center; color: #666; font-size: 13px; margin-top: 10px; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sprachbot — Registrierung</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── Hintergrund ──────────────────────────────────────────── */
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(0,78,146,.35) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 10%, rgba(80,230,255,.15) 0%, transparent 55%),
+      linear-gradient(160deg, #060b1a 0%, #0d1b3e 45%, #091428 100%);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    padding: 16px;
+  }
+
+  /* ── Karte ────────────────────────────────────────────────── */
+  .card {
+    width: 100%;
+    max-width: 480px;
+    height: min(720px, calc(100vh - 32px));
+    background: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 0 0 1px rgba(80,230,255,.15),
+      0 8px 32px rgba(0,0,0,.55),
+      0 32px 80px rgba(0,78,146,.25);
+    animation: cardIn .55s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(24px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ── Header ───────────────────────────────────────────────── */
+  .header {
+    background: linear-gradient(135deg, #004e92 0%, #0078d4 60%, #00a4ef 100%);
+    padding: 18px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .avatar {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,.3);
+  }
+
+  .header-info { flex: 1; min-width: 0; }
+  .header-title {
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-subtitle {
+    color: rgba(255,255,255,.75);
+    font-size: .78rem;
+    margin-top: 2px;
+  }
+
+  /* Status-Indikator */
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #ffc107;
+    flex-shrink: 0;
+    transition: background .4s;
+  }
+  .status-dot.connected  { background: #4caf50; animation: pulse 2.5s infinite; }
+  .status-dot.error      { background: #f44336; }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(76,175,80,.6); }
+    50%      { box-shadow: 0 0 0 5px rgba(76,175,80,0); }
+  }
+
+  /* Sprach-Umschalter */
+  .lang-switch {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .lang-btn {
+    border: 1.5px solid rgba(255,255,255,.35);
+    background: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.8);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: .78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, border-color .2s, color .2s;
+    display: flex; align-items: center; gap: 4px;
+    font-family: inherit;
+  }
+  .lang-btn:hover {
+    background: rgba(255,255,255,.22);
+    border-color: rgba(255,255,255,.6);
+    color: #fff;
+  }
+  .lang-btn.active {
+    background: rgba(255,255,255,.28);
+    border-color: #fff;
+    color: #fff;
+  }
+
+  /* ── Lade-Overlay ─────────────────────────────────────────── */
+  #loading {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    background: #f8fbff;
+  }
+  #loading.hidden { display: none; }
+
+  .spinner {
+    width: 42px; height: 42px;
+    border: 3px solid #e3edf7;
+    border-top-color: #0078d4;
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #loading p {
+    color: #555;
+    font-size: .9rem;
+  }
+
+  /* ── WebChat-Bereich ──────────────────────────────────────── */
+  #webchat {
+    flex: 1;
+    overflow: hidden;
+    display: none; /* erst nach connect sichtbar */
+  }
+  #webchat.visible { display: block; }
+
+  /* WebChat-Styles überschreiben */
+  #webchat .webchat__send-box {
+    border-top: 1px solid #e8f0f8 !important;
+  }
+
+  /* ── Fehler-Banner ────────────────────────────────────────── */
+  #error-banner {
+    display: none;
+    background: #fdecea;
+    border-top: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px 20px;
+    font-size: .85rem;
+    text-align: center;
+  }
+  #error-banner.visible { display: block; }
+
+  /* ── Fußzeile ─────────────────────────────────────────────── */
+  .footer {
+    padding: 10px 20px;
+    background: #f8fbff;
+    border-top: 1px solid #e8f0f8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .footer-icon { font-size: 1rem; }
+  .footer p {
+    font-size: .76rem;
+    color: #7a96b3;
+    line-height: 1.4;
+  }
+  #footer-hint { transition: opacity .3s; }
+
+  /* ── Branding ─────────────────────────────────────────────── */
+  .brand {
+    position: fixed;
+    bottom: 12px; left: 50%;
+    transform: translateX(-50%);
+    font-size: .72rem;
+    color: rgba(255,255,255,.22);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+</style>
 </head>
 <body>
-  <h1>Account-Registrierung per Sprache</h1>
+
+<div class="card">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="avatar">🎙️</div>
+    <div class="header-info">
+      <div class="header-title">
+        <span id="header-title">Sprachbot</span>
+        <span class="status-dot" id="status-dot"></span>
+      </div>
+      <div class="header-subtitle" id="header-subtitle">Registrierungs-Assistent</div>
+    </div>
+    <div class="lang-switch">
+      <button class="lang-btn active" id="btn-de" onclick="setLang('de')" title="Deutsch">🇩🇪 DE</button>
+      <button class="lang-btn"        id="btn-en" onclick="setLang('en')" title="English">🇬🇧 EN</button>
+    </div>
+  </div>
+
+  <!-- Lade-Animation -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <p id="loading-text">Verbinde…</p>
+  </div>
+
+  <!-- WebChat -->
   <div id="webchat" role="main"></div>
-  <p class="hint">Tipp: Klicke auf das Mikrofon-Symbol und sage "Ich möchte mich registrieren".</p>
-  <script crossorigin="anonymous"
-    src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
-  <script>
-    (async function() {
-      const dlRes = await fetch('/api/directline-token');
-      const { token: dlToken } = await dlRes.json();
-      const spRes = await fetch('/api/speech-token');
-      const { token: spToken, region } = await spRes.json();
-      const speechFactory = await window.WebChat
-        .createCognitiveServicesSpeechServicesPonyfillFactory({
-          credentials: { region, authorizationToken: spToken }
-        });
-      window.WebChat.renderWebChat({
-        directLine: window.WebChat.createDirectLine({ token: dlToken }),
-        webSpeechPonyfillFactory: speechFactory,
-        locale: 'de-DE'
-      }, document.getElementById('webchat'));
-    })();
-  </script>
+
+  <!-- Fehler -->
+  <div id="error-banner" role="alert"></div>
+
+  <!-- Fußzeile -->
+  <div class="footer">
+    <span class="footer-icon">🎤</span>
+    <p id="footer-hint">Klicke auf das Mikrofon und sage „Ich möchte mich registrieren".</p>
+  </div>
+
+</div>
+
+<div class="brand">Advanced Topics in Cloud Computing · TH Brandenburg · SS 2026</div>
+
+<!-- Bot Framework WebChat -->
+<script crossorigin="anonymous"
+  src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
+
+<script>
+// ── Übersetzungen für das UI ───────────────────────────────────
+const UI = {
+  de: {
+    title:     'Sprachbot',
+    subtitle:  'Registrierungs-Assistent',
+    loading:   'Verbinde…',
+    connected: 'Bereit',
+    error:     'Verbindung fehlgeschlagen. Bitte Seite neu laden.',
+    hint:      'Klicke auf das Mikrofon und sage „Ich möchte mich registrieren".',
+    switching: 'Sprache wird gewechselt…',
+  },
+  en: {
+    title:     'Voice Bot',
+    subtitle:  'Registration Assistant',
+    loading:   'Connecting…',
+    connected: 'Ready',
+    error:     'Connection failed. Please reload the page.',
+    hint:      'Click the microphone and say "I want to register".',
+    switching: 'Switching language…',
+  }
+};
+
+let store;
+let currentLang = localStorage.getItem('voicebot_lang') || 'de';
+
+// ── UI-Hilfsfunktionen ─────────────────────────────────────────
+function updateUI(lang) {
+  const u = UI[lang] || UI.de;
+  document.getElementById('header-title').textContent   = u.title;
+  document.getElementById('header-subtitle').textContent = u.subtitle;
+  document.getElementById('footer-hint').textContent    = u.hint;
+  document.getElementById('btn-de').classList.toggle('active', lang === 'de');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.documentElement.lang = lang === 'en' ? 'en' : 'de';
+}
+
+function setStatus(state, lang) {
+  const dot  = document.getElementById('status-dot');
+  const sub  = document.getElementById('header-subtitle');
+  const u    = UI[lang] || UI.de;
+  dot.className = 'status-dot ' + state;
+  if (state === 'connected') sub.textContent = u.connected;
+}
+
+function showError(lang) {
+  const banner = document.getElementById('error-banner');
+  banner.textContent = (UI[lang] || UI.de).error;
+  banner.classList.add('visible');
+  document.getElementById('loading').classList.add('hidden');
+}
+
+// ── Sprachumschalter ───────────────────────────────────────────
+function setLang(lang) {
+  if (lang === currentLang) return;
+  currentLang = lang;
+  localStorage.setItem('voicebot_lang', lang);
+  updateUI(lang);
+
+  // Bot über Sprachwechsel informieren — löst auch Dialog-Neustart aus
+  if (store) {
+    store.dispatch({
+      type: 'WEB_CHAT/SEND_MESSAGE',
+      payload: { text: '__setlang:' + lang }
+    });
+  }
+}
+
+// ── WebChat initialisieren ─────────────────────────────────────
+(async function init() {
+  updateUI(currentLang);
+  document.getElementById('loading-text').textContent = (UI[currentLang] || UI.de).loading;
+
+  try {
+    // Tokens holen
+    const [dlRes, spRes] = await Promise.all([
+      fetch('/api/directline-token'),
+      fetch('/api/speech-token')
+    ]);
+
+    if (!dlRes.ok || !spRes.ok) throw new Error('Token-Endpunkt nicht erreichbar');
+
+    const { token: dlToken }          = await dlRes.json();
+    const { token: spToken, region }  = await spRes.json();
+
+    // Speech-Factory
+    const speechFactory = await window.WebChat
+      .createCognitiveServicesSpeechServicesPonyfillFactory({
+        credentials: { region, authorizationToken: spToken }
+      });
+
+    // Store mit Connection-Events
+    store = window.WebChat.createStore({}, ({ dispatch }) => next => action => {
+      if (action.type === 'DIRECT_LINE/CONNECT_FULFILLED') {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('webchat').classList.add('visible');
+        setStatus('connected', currentLang);
+      }
+      if (action.type === 'DIRECT_LINE/CONNECT_PENDING') {
+        setStatus('', currentLang);
+      }
+      if (action.type === 'DIRECT_LINE/DISCONNECT_FULFILLED') {
+        setStatus('error', currentLang);
+      }
+      return next(action);
+    });
+
+    // Sprache aus localStorage übernehmen (Seite wurde neu geladen)
+    const savedLang = localStorage.getItem('voicebot_lang') || 'de';
+
+    window.WebChat.renderWebChat({
+      directLine:              window.WebChat.createDirectLine({ token: dlToken }),
+      webSpeechPonyfillFactory: speechFactory,
+      store,
+      locale:                  savedLang === 'en' ? 'en-US' : 'de-DE',
+      styleOptions: {
+        // Farben & Abstände
+        accent:                    '#0078d4',
+        botAvatarBackgroundColor:  '#0078d4',
+        botAvatarInitials:         '🎙',
+        userAvatarBackgroundColor: '#005a9e',
+        userAvatarInitials:        '👤',
+        bubbleBackground:          '#f0f7ff',
+        bubbleBorderColor:         '#cde4f5',
+        bubbleFromUserBackground:  '#0078d4',
+        bubbleFromUserTextColor:   '#ffffff',
+        bubbleFromUserBorderColor: '#0078d4',
+        sendBoxBackground:         '#ffffff',
+        sendBoxBorderColor:        '#d0e4f5',
+        transcriptBackground:      '#f8fbff',
+        // Maße
+        bubbleBorderRadius:        12,
+        bubbleFromUserBorderRadius:12,
+        messageActivityWordBreak:  'break-word',
+        // Schrift
+        primaryFont:               '\'Segoe UI\', system-ui, sans-serif',
+        rootHeight:                '100%',
+        rootWidth:                 '100%',
+        // Mikrofon-Button deutlich sichtbar
+        microphoneButtonColorOnDictate: '#0078d4',
+      }
+    }, document.getElementById('webchat'));
+
+  } catch (err) {
+    console.error('Init-Fehler:', err);
+    showError(currentLang);
+  }
+})();
+</script>
 </body>
 </html>
