@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Sprachbot — Registrierung</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; background: #f0f0f0; }
+    h1 { color: #333; text-align: center; }
+    #webchat { height: 600px; max-width: 500px; margin: 0 auto;
+               box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 8px;
+               overflow: hidden; background: white; }
+    .hint { text-align: center; color: #666; font-size: 13px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Account-Registrierung per Sprache</h1>
+  <div id="webchat" role="main"></div>
+  <p class="hint">Tipp: Klicke auf das Mikrofon-Symbol und sage "Ich möchte mich registrieren".</p>
+  <script crossorigin="anonymous"
+    src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
+  <script>
+    (async function() {
+      const dlRes = await fetch('/api/directline-token');
+      const { token: dlToken } = await dlRes.json();
+      const spRes = await fetch('/api/speech-token');
+      const { token: spToken, region } = await spRes.json();
+      const speechFactory = await window.WebChat
+        .createCognitiveServicesSpeechServicesPonyfillFactory({
+          credentials: { region, authorizationToken: spToken }
+        });
+      window.WebChat.renderWebChat({
+        directLine: window.WebChat.createDirectLine({ token: dlToken }),
+        webSpeechPonyfillFactory: speechFactory,
+        locale: 'de-DE'
+      }, document.getElementById('webchat'));
+    })();
+  </script>
+</body>
+</html>
