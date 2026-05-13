@@ -1,0 +1,81 @@
+name: Deploy Voicebot to Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  APP_NAME: voicebot-app-hans
+  RESOURCE_GROUP: rg-voicebot
+  NODE_VERSION: '22'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create deployment ZIP
+        run: |
+          zip -rq deploy.zip . \
+            -x "node_modules/*" \
+            -x ".git/*" \
+            -x ".github/*" \
+            -x ".env*" \
+            -x "*.log" \
+            -x "voicebot-local.sh" \
+            -x "voicebot-deploy.sh" \
+            -x "skript.sh" \
+            -x "docs/*" \
+            -x "infra/*" \
+            -x "aufgabe.txt" \
+            -x "TECHNISCHE_RAHMENBEDINGUNGEN.txt"
+          echo "ZIP-Grösse: $(du -sh deploy.zip | cut -f1)"
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure App Service
+        run: |
+          az webapp deploy \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$APP_NAME" \
+            --src-path deploy.zip \
+            --type zip \
+            --timeout 600
+
+      - name: Health Check
+        run: |
+          echo "Warte auf Startup..."
+          for i in {1..18}; do
+            sleep 10
+            HTTP_CODE=$(curl -sI "https://${APP_NAME}.azurewebsites.net/api/messages" \
+              -o /dev/null -w "%{http_code}" --max-time 10 2>/dev/null)
+            echo "  Versuch $i/18: HTTP $HTTP_CODE"
+            if [[ "$HTTP_CODE" == "401" || "$HTTP_CODE" == "405" || "$HTTP_CODE" == "200" ]]; then
+              echo "App antwortet korrekt (HTTP $HTTP_CODE)"
+              exit 0
+            fi
+          done
+          echo "Health Check fehlgeschlagen"
+          exit 1
+
+      - name: Azure Logout
+        if: always()
+        run: az logout

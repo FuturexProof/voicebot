@@ -1,0 +1,21 @@
+node_modules/
+deploy.zip
+*.log
+.env
+.env.*
+
+# Lokale Konfiguration mit Azure-IDs (nicht committen)
+~/voicebot-env.sh
+
+# Lokale Laufzeitdaten
+.voicebot/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
