@@ -19,3 +19,6 @@ deploy.zip
 .DS_Store
 Thumbs.db
 
+
+# Doppelte Root-PDF (kanonische Version in docs/)
+technische-Voicebot-Dokumentation-MK-SS2026.pdf
