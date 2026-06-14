@@ -19,8 +19,10 @@ deploy.zip
 .DS_Store
 Thumbs.db
 
-# Doku/Spezifikation gehoeren nicht in den main-Branch (auf v2-improvements gepflegt)
+# Doku/Spezifikation/Abgabe gehoeren nicht in den main-Branch (lokal gepflegt)
 docs/
 TECHNISCHE_RAHMENBEDINGUNGEN.txt
 technische-Voicebot-Dokumentation-MK-SS2026.pdf
+Abgabe/
+aufgabe.txt
 
