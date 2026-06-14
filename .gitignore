@@ -19,3 +19,7 @@ deploy.zip
 .DS_Store
 Thumbs.db
 
+# Doku/Spezifikation gehoeren nicht in den main-Branch (auf v2-improvements gepflegt)
+docs/
+TECHNISCHE_RAHMENBEDINGUNGEN.txt
+
