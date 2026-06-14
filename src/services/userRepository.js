@@ -46,12 +46,6 @@ class UserRepository {
     const result = await r.query(q);
     return result.recordset;
   }
-
-  async count() {
-    await this.ready;
-    const result = await this.pool.request().query('SELECT COUNT(*) AS n FROM Users');
-    return result.recordset[0].n;
-  }
 }
 
 module.exports = { UserRepository };

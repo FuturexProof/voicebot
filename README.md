@@ -8,12 +8,12 @@ Bearbeiter: MK
 
 ## Projektbeschreibung
 
-Nutzer öffnen eine Webseite, klicken das Mikrofon an und sprechen ihre Registrierungsdaten ein. Der Bot fragt schrittweise nach — Vorname, Nachname, Geburtsdatum bis zum Land — validiert jede Eingabe und speichert den Account in einer Azure SQL-Datenbank. Tippfehler und Nachfragen sind eingebaut; wer eine ungültige E-Mail spricht, bekommt beim zweiten Fehler ein konkretes Format-Beispiel statt derselben Fehlermeldung.
+Nutzer öffnen eine Webseite, klicken das Mikrofon an und sprechen ihre Registrierungsdaten ein. Der Bot fragt schrittweise nach, von Vorname und Nachname über das Geburtsdatum bis zum Land, validiert jede Eingabe und speichert den Account in einer Azure SQL-Datenbank. Tippfehler und Nachfragen sind eingebaut; wer eine ungültige E-Mail spricht, bekommt beim zweiten Fehler ein konkretes Format-Beispiel statt derselben Fehlermeldung.
 
 Der gesamte Stack läuft auf Azure: Bot Framework v4, Azure CLU für die Intent-Erkennung, Speech Services für STT/TTS im Browser, Key Vault für alle Secrets. Kein einziger API-Key steht im Quellcode.
 
 **Live-URL:** https://voicebot-app-hans.azurewebsites.net  
-*(nach `./voicebot-deploy.sh wakeup` — Startup ca. 2 Min.)*
+*(nach `./voicebot-deploy.sh wakeup`, Startup ca. 2 Min.)*
 
 ---
 
@@ -35,9 +35,9 @@ git checkout v2-improvements && ./voicebot-deploy.sh deploy
 ### Neu in v2
 
 - **Mehrsprachigkeit (DE / EN):** Der Bot erkennt aus dem ersten Satz, ob jemand Deutsch oder Englisch spricht; Umschalter DE/EN im Header; förmlich/informell-Erkennung über grossgeschriebenes „Sie"
-- **Adaptiver Dialog:** Beim zweiten Fehlerversuch gibt der Validator ein konkretes Format-Beispiel statt der kurzen Meldung — über `ctx.attemptCount` aus Bot Framework, kein eigener State-Counter nötig
+- **Adaptiver Dialog:** Beim zweiten Fehlerversuch gibt der Validator ein konkretes Format-Beispiel statt der kurzen Meldung, realisiert über `ctx.attemptCount` aus Bot Framework, kein eigener State-Counter nötig
 - **UI-Redesign:** Dunkler Hintergrund, Card-Layout, Azure-Blau-Akzente, animierter Status-Punkt, Lade-Spinner beim Verbindungsaufbau
-- **i18n-Modul:** `src/i18n/messages.js` — alle Bot-Texte in DE, DE-formal und EN an einem Ort; kein externes Framework
+- **i18n-Modul:** `src/i18n/messages.js`, alle Bot-Texte in DE, DE-formal und EN an einem Ort; kein externes Framework
 
 ---
 
@@ -171,7 +171,7 @@ Automatisches Deployment via GitHub Actions bei jedem Push auf `main`.
 Konfiguration: [.github/workflows/deploy.yml](.github/workflows/deploy.yml)
 
 Benötigte GitHub Secrets:
-- `AZURE_CREDENTIALS` — Service Principal JSON (siehe Installationsanleitung)
+- `AZURE_CREDENTIALS`: Service Principal JSON (siehe Installationsanleitung)
 
 ---
 
@@ -213,6 +213,6 @@ Jederzeit verfügbar: `abbrechen`, `hilfe`, `neu starten`
 
 | Datum | Meilenstein | Status |
 |---|---|---|
-| 04.05.2026 | Konzeptpapier, CLU-Modell, Azure-Ressourcen | ✅ |
-| 08.06.2026 | Prototyp, Datenbankintegration, Zwischenpräsentation | 🔄 |
-| 29.06.2026 | Vollständiger Bot, Dokumentation, Abschlusspräsentation | 🔄 |
+| 04.05.2026 | Konzeptpapier, CLU-Modell, Azure-Ressourcen | erledigt |
+| 08.06.2026 | Prototyp, Datenbankintegration, Zwischenpräsentation | erledigt |
+| 29.06.2026 | Vollständiger Bot, Dokumentation, Abschlusspräsentation | in Arbeit |

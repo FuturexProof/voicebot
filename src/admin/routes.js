@@ -15,14 +15,14 @@ function basicAuth(req, res, next) {
 }
 
 module.exports = function(server, userRepo) {
-  // Sync Handler — DARF next haben
+  // Sync-Handler: darf next haben
   server.get('/admin', basicAuth, (req, res, next) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.end(fs.readFileSync(path.join(__dirname, 'dashboard.html')));
     return next();
   });
 
-  // Async Handler — DARF KEIN next haben (Restify 11+ Regel)
+  // Async-Handler: kein next (Restify 11+ Regel)
   server.get('/admin/api/users', basicAuth, async (req, res) => {
     try {
       const users = await userRepo.list({ search: req.query.q });

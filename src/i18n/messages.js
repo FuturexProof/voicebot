@@ -40,7 +40,7 @@ const de = {
   streetErr2:   'Die Hausnummer fehlt noch. Bitte beides angeben.',
 };
 
-// Nur die Strings, die sich formal unterscheiden — der Rest wird von `de` geerbt
+// Nur die Strings, die sich formal unterscheiden; der Rest wird von `de` geerbt
 const de_formal = {
   ...de,
   welcome:      'Guten Tag! Ich bin Ihr Registrierungs-Assistent. Sagen Sie "Ich möchte mich registrieren", um zu starten.',
@@ -96,8 +96,8 @@ const en = {
   emailErr2:    'Please use the format: name@domain.com — e.g. anna@gmail.com',
   phoneErr1:    'Please enter a valid phone number (at least 6 digits).',
   phoneErr2:    'Example: +1 555 123 4567 or (555) 123-4567',
-  zipErr1:      'Please enter a valid postal code.',
-  zipErr2:      'Please enter your postal code (digits only).',
+  zipErr1:      'A postal code has exactly 5 digits.',
+  zipErr2:      'Please enter exactly 5 digits, e.g. 14770.',
   streetErr1:   'Please enter your street and house number (e.g. "Main Street 12").',
   streetErr2:   'The house number seems to be missing. Please include street and number.',
 };

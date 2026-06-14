@@ -5,7 +5,7 @@ deploy.zip
 .env.*
 
 # Lokale Konfiguration mit Azure-IDs (nicht committen)
-~/voicebot-env.sh
+voicebot-env.sh
 
 # Lokale Laufzeitdaten
 .voicebot/
@@ -18,7 +18,6 @@ deploy.zip
 # OS
 .DS_Store
 Thumbs.db
-
 
 # Doppelte Root-PDF (kanonische Version in docs/)
 technische-Voicebot-Dokumentation-MK-SS2026.pdf

@@ -4,7 +4,7 @@ const { AzureKeyCredential } = require('@azure/core-auth');
 class CluRecognizer {
   constructor({ endpoint, key, project, deployment }) {
     if (!endpoint || !key) {
-      console.warn('[cluRecognizer] CLU nicht konfiguriert — Regelfallback');
+      console.warn('[cluRecognizer] CLU nicht konfiguriert, nutze Regelfallback');
       return;
     }
     this.client     = new ConversationAnalysisClient(endpoint, new AzureKeyCredential(key));

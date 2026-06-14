@@ -2,7 +2,7 @@ const msgs = require('../i18n/messages');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^\+?[\d\s\-()]{6,20}$/;
-const ZIP_RE   = /^\d{4,10}$/;
+const ZIP_RE   = /^\d{5}$/;
 
 function normalize(str) {
   return (str || '').trim().replace(/[.,!?;:]+$/, '').trim();

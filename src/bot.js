@@ -33,7 +33,7 @@ class RegistrationBot extends ActivityHandler {
     this.onMessage(async (context, next) => {
       const rawText = context.activity.text || '';
 
-      // ── Sprachwechsel-Kommando vom Frontend ───────────────────
+      // Sprachwechsel-Kommando vom Frontend
       if (rawText.startsWith('__setlang:')) {
         const newLang = rawText.split(':')[1];
         if (newLang === 'en' || newLang === 'de') {
@@ -49,7 +49,7 @@ class RegistrationBot extends ActivityHandler {
         return next();
       }
 
-      // ── Sprache & Ton beim ersten Satz erkennen ───────────────
+      // Sprache und Ton beim ersten Satz erkennen
       let lang   = await this.langState.get(context, null);
       let formal = await this.formalState.get(context, null);
 
@@ -66,7 +66,7 @@ class RegistrationBot extends ActivityHandler {
       context.turnState.set('lang',   lang);
       context.turnState.set('formal', formal);
 
-      // ── Text normalisieren ────────────────────────────────────
+      // Text normalisieren
       context.activity.text = normalize(rawText);
       const text = context.activity.text;
 

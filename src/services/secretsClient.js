@@ -3,7 +3,7 @@ const { SecretClient } = require('@azure/keyvault-secrets');
 
 async function loadSecrets(kvName) {
   if (!kvName) {
-    console.warn('[secretsClient] KV_NAME nicht gesetzt — laufe mit Dummy-Werten');
+    console.warn('[secretsClient] KV_NAME nicht gesetzt, laufe mit Dummy-Werten');
     return {
       sqlConnectionString: process.env.SQL_CONN || '',
       speechKey: process.env.SPEECH_KEY || '',
@@ -15,7 +15,7 @@ async function loadSecrets(kvName) {
     };
   }
 
-  // UAMI Client-ID explizit angeben — sonst findet DefaultAzureCredential
+  // UAMI Client-ID explizit angeben, sonst findet DefaultAzureCredential
   // die User-Assigned MI im App Service nicht (probiert nur System-Assigned)
   const credential = new DefaultAzureCredential({
     managedIdentityClientId: process.env.UAMI_CLIENT_ID || process.env.MicrosoftAppId
