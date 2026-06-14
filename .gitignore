@@ -19,9 +19,11 @@ voicebot-env.sh
 .DS_Store
 Thumbs.db
 
-# Doku/Spezifikation lokal halten, nicht ins Repo
+# Doku/Spezifikation/Abgabe lokal halten, nicht ins Repo
 docs/
 TECHNISCHE_RAHMENBEDINGUNGEN.txt
+Abgabe/
+aufgabe.txt
 
 # Doppelte Root-PDF (kanonische Version in docs/)
 technische-Voicebot-Dokumentation-MK-SS2026.pdf
