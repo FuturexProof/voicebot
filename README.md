@@ -1,6 +1,6 @@
 # Sprachbot zur Benutzerregistrierung
 
-**Advanced Topics in Cloud Computing — Sommersemester 2026**  
+**Advanced Topics in Cloud Computing · Sommersemester 2026**  
 Technische Hochschule Brandenburg · Prof. Dr.-Ing. Florian Marquardt  
 Bearbeiter: MK
 
@@ -22,7 +22,7 @@ Der gesamte Stack läuft auf Azure: Bot Framework v4, Azure CLU für die Intent-
 | Branch | Beschreibung | Tag |
 |---|---|---|
 | `main` | Stabile Basisversion | `v1.0-stable` |
-| `v2-improvements` | Mehrsprachigkeit, adaptiver Dialog, UI-Redesign | — |
+| `v2-improvements` | Mehrsprachigkeit, adaptiver Dialog, UI-Redesign | (noch kein Tag) |
 
 ```bash
 # Zur stabilen v1.0 wechseln
@@ -34,10 +34,10 @@ git checkout v2-improvements && ./voicebot-deploy.sh deploy
 
 ### Neu in v2
 
-- **Mehrsprachigkeit (DE / EN):** Der Bot erkennt aus dem ersten Satz, ob jemand Deutsch oder Englisch spricht; Umschalter DE/EN im Header; förmlich/informell-Erkennung über grossgeschriebenes „Sie"
-- **Adaptiver Dialog:** Beim zweiten Fehlerversuch gibt der Validator ein konkretes Format-Beispiel statt der kurzen Meldung, realisiert über `ctx.attemptCount` aus Bot Framework, kein eigener State-Counter nötig
-- **UI-Redesign:** Dunkler Hintergrund, Card-Layout, Azure-Blau-Akzente, animierter Status-Punkt, Lade-Spinner beim Verbindungsaufbau
-- **i18n-Modul:** `src/i18n/messages.js`, alle Bot-Texte in DE, DE-formal und EN an einem Ort; kein externes Framework
+- **Mehrsprachigkeit (DE/EN):** Der Bot erkennt schon am ersten Satz, ob jemand Deutsch oder Englisch spricht. Im Header sitzt ein DE/EN-Umschalter. Ob jemand gesiezt oder geduzt werden möchte, leitet der Bot aus einem großgeschriebenen „Sie" ab.
+- **Adaptiver Dialog:** Wer beim zweiten Versuch wieder etwas Ungültiges sagt, bekommt nicht dieselbe Meldung, sondern ein konkretes Format-Beispiel. Das läuft über `ctx.attemptCount` aus dem Bot Framework, ein eigener State-Counter ist nicht nötig.
+- **UI-Redesign:** Dunkler Hintergrund, Card-Layout, Azure-Blau als Akzentfarbe, dazu ein animierter Status-Punkt und ein Lade-Spinner beim Verbindungsaufbau.
+- **i18n-Modul:** Alle Bot-Texte liegen gebündelt in `src/i18n/messages.js`, jeweils als DE, DE-formal und EN. Ganz ohne externes Framework.
 
 ---
 
