@@ -1,6 +1,6 @@
 # Sprachbot zur Benutzerregistrierung
 
-**Advanced Topics in Cloud Computing — Sommersemester 2026**  
+**Advanced Topics in Cloud Computing · Sommersemester 2026**  
 Technische Hochschule Brandenburg · Prof. Dr.-Ing. Florian Marquardt  
 Bearbeiter: MK
 
@@ -141,7 +141,7 @@ Automatisches Deployment via GitHub Actions bei jedem Push auf `main`.
 Konfiguration: [.github/workflows/deploy.yml](.github/workflows/deploy.yml)
 
 Benötigte GitHub Secrets:
-- `AZURE_CREDENTIALS` — Service Principal JSON (siehe Installationsanleitung)
+- `AZURE_CREDENTIALS`: Service Principal JSON (siehe Installationsanleitung)
 
 ---
 
@@ -183,6 +183,6 @@ Jederzeit verfügbar: `abbrechen`, `hilfe`, `neu starten`
 
 | Datum | Meilenstein | Status |
 |---|---|---|
-| 04.05.2026 | Konzeptpapier, CLU-Modell, Azure-Ressourcen | ✅ |
-| 08.06.2026 | Prototyp, Datenbankintegration, Zwischenpräsentation | 🔄 |
-| 29.06.2026 | Vollständiger Bot, Dokumentation, Abschlusspräsentation | 🔄 |
+| 04.05.2026 | Konzeptpapier, CLU-Modell, Azure-Ressourcen | erledigt |
+| 08.06.2026 | Prototyp, Datenbankintegration, Zwischenpräsentation | erledigt |
+| 29.06.2026 | Vollständiger Bot, Dokumentation, Abschlusspräsentation | in Arbeit |
