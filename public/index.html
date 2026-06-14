@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sprachbot — Registrierung</title>
+<title>Sprachbot - Registrierung</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -309,7 +309,7 @@ function setLang(lang) {
   localStorage.setItem('voicebot_lang', lang);
   updateUI(lang);
 
-  // Bot über Sprachwechsel informieren — löst auch Dialog-Neustart aus
+  // Bot über Sprachwechsel informieren - löst auch Dialog-Neustart aus
   if (store) {
     store.dispatch({
       type: 'WEB_CHAT/SEND_MESSAGE',
