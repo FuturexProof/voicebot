@@ -4,8 +4,6 @@
 Technische Hochschule Brandenburg · Prof. Dr.-Ing. Florian Marquardt  
 Bearbeiter: MK
 
----
-
 ## Projektbeschreibung
 
 Nutzer öffnen eine Webseite, klicken das Mikrofon an und sprechen ihre Registrierungsdaten ein. Der Bot fragt schrittweise nach, von Vorname und Nachname über das Geburtsdatum bis zum Land, validiert jede Eingabe und speichert den Account in einer Azure SQL-Datenbank. Tippfehler und Nachfragen sind eingebaut; wer eine ungültige E-Mail spricht, bekommt beim zweiten Fehler ein konkretes Format-Beispiel statt derselben Fehlermeldung.
@@ -14,8 +12,6 @@ Der gesamte Stack läuft auf Azure: Bot Framework v4, Azure CLU für die Intent-
 
 **Live-URL:** https://voicebot-app-hans.azurewebsites.net  
 *(nach `./voicebot-deploy.sh wakeup`, Startup ca. 2 Min.)*
-
----
 
 ## Versionen & Versionswechsel
 
@@ -39,42 +35,17 @@ git checkout v2-improvements && ./voicebot-deploy.sh deploy
 - **UI-Redesign:** Dunkler Hintergrund, Card-Layout, Azure-Blau als Akzentfarbe, dazu ein animierter Status-Punkt und ein Lade-Spinner beim Verbindungsaufbau.
 - **i18n-Modul:** Alle Bot-Texte liegen gebündelt in `src/i18n/messages.js`, jeweils als DE, DE-formal und EN. Ganz ohne externes Framework.
 
----
-
 ## Architektur-Überblick
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Azure App Service                        │
-│  ┌─────────────────┐   ┌──────────────┐   ┌─────────────────┐  │
-│  │ public/         │   │  src/bot.js  │   │ src/admin/      │  │
-│  │ index.html      │◄──│  (Router)    │   │ Dashboard, API  │  │
-│  │ WebChat Widget  │   └──────┬───────┘   └─────────────────┘  │
-│  └─────────────────┘          │                                 │
-│                         ┌─────▼────────────────────────────┐    │
-│                         │  src/dialogs/                    │    │
-│                         │  registrationDialog.js (10 Schr.)│    │
-│                         │  validators.js + normalize()     │    │
-│                         └─────┬────────────────────────────┘    │
-│                               │                                 │
-│               ┌───────────────┼───────────────────┐            │
-│               ▼               ▼                   ▼            │
-│        secretsClient    cluRecognizer       userRepository      │
-└───────────────┬───────────────┬───────────────────┬────────────┘
-                │               │                   │
-        ┌───────▼──┐    ┌───────▼────┐    ┌─────────▼──────┐
-        │Key Vault │    │Azure CLU   │    │Azure SQL DB    │
-        └──────────┘    └────────────┘    └────────────────┘
-                │
-        ┌───────▼──────────────────────┐
-        │ DirectLineSecret, SpeechKey, │
-        │ SqlConnectionString, ...     │
-        └──────────────────────────────┘
-```
+Der Browser lädt das WebChat-Frontend (`public/index.html`) und spricht über Direct Line mit dem Bot. `src/bot.js` erkennt Sprache und Intent (Azure CLU, mit Regel-Fallback) und steuert den 10-Schritt-Waterfall-Dialog unter `src/dialogs/`. Drei Service-Module kapseln die Azure-Anbindung:
 
-Ausführliche Dokumentation: [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md)
+- `secretsClient.js` – lädt alle Secrets passwortlos (UAMI) aus dem Key Vault
+- `cluRecognizer.js` – ruft Azure CLU für die Intent-Erkennung auf
+- `userRepository.js` – schreibt die fertige Registrierung in die Azure SQL-Datenbank
 
----
+Das Admin-Dashboard unter `src/admin/` liest dieselbe Datenbank für Benutzerliste, Export und Statistik.
+
+Ausführliche Dokumentation mit Sequenzdiagrammen: [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md)
 
 ## Verwendete Azure-Dienste
 
@@ -87,8 +58,6 @@ Ausführliche Dokumentation: [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md)
 | Azure SQL Database | voicebotdb | Benutzerspeicherung |
 | Azure Key Vault | kv-voicebot-hans | Secrets Management |
 | User Assigned MI | voicebot-id | Passwortlose Auth |
-
----
 
 ## Schnellstart
 
@@ -128,8 +97,6 @@ Ausführliche Dokumentation: [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md)
 
 Detaillierte Installationsanleitung: [docs/INSTALLATIONSANLEITUNG.md](docs/INSTALLATIONSANLEITUNG.md)
 
----
-
 ## Projektstruktur
 
 ```
@@ -163,8 +130,6 @@ voicebot/
         └── deploy.yml            CI/CD GitHub Actions
 ```
 
----
-
 ## CI/CD
 
 Automatisches Deployment via GitHub Actions bei jedem Push auf `main`.  
@@ -172,8 +137,6 @@ Konfiguration: [.github/workflows/deploy.yml](.github/workflows/deploy.yml)
 
 Benötigte GitHub Secrets:
 - `AZURE_CREDENTIALS`: Service Principal JSON (siehe Installationsanleitung)
-
----
 
 ## Admin-Interface
 
@@ -187,8 +150,6 @@ Erreichbar unter `/admin` (HTTP Basic Auth).
 | `/admin/api/export.csv` | Vollexport CSV |
 | `/admin/api/stats.pdf` | Statistik-PDF |
 
----
-
 ## Dialogfluss
 
 ```
@@ -198,16 +159,12 @@ Telefon → Straße → PLZ → Stadt → Land → Bestätigung → Speichern
 
 Jederzeit verfügbar: `abbrechen`, `hilfe`, `neu starten`
 
----
-
 ## Kosten
 
 | Zustand | Kosten/Tag |
 |---|---|
 | Aktiv (B1) | ~0,60 € |
 | Shutdown (F1) | ~0,17 € (nur SQL) |
-
----
 
 ## Meilensteine
 
