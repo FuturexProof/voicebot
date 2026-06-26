@@ -27,3 +27,7 @@ aufgabe.txt
 
 # Doppelte Root-PDF (kanonische Version in docs/)
 technische-Voicebot-Dokumentation-MK-SS2026.pdf
+
+# Deploy-/Test-Skripte lokal halten, nicht ins Repo
+voicebot-deploy.sh
+voicebot-local.sh
