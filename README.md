@@ -37,7 +37,7 @@ git checkout v2-improvements && ./voicebot-deploy.sh deploy
 
 ## Architektur-Überblick
 
-Der Browser lädt das WebChat-Frontend (`public/index.html`) und spricht über Direct Line mit dem Bot. `src/bot.js` erkennt Sprache und Intent (Azure CLU, mit Regel-Fallback) und steuert den 10-Schritt-Waterfall-Dialog unter `src/dialogs/`. Drei Service-Module kapseln die Azure-Anbindung:
+Der Browser lädt das WebChat-Frontend (`public/index.html`) und spricht über Direct Line mit dem Bot. `src/bot.js` erkennt Sprache und Intent (Azure CLU, mit Regel-Fallback) und steuert den Waterfall-Dialog (9 Abfragefelder) unter `src/dialogs/`. Drei Service-Module kapseln die Azure-Anbindung:
 
 - `secretsClient.js` – lädt alle Secrets passwortlos (UAMI) aus dem Key Vault
 - `cluRecognizer.js` – ruft Azure CLU für die Intent-Erkennung auf
@@ -113,7 +113,7 @@ voicebot/
 │   │   ├── routes.js             Admin-API (users, export, stats)
 │   │   └── dashboard.html        Admin-Dashboard
 │   ├── dialogs/
-│   │   ├── registrationDialog.js 10-Schritt-WaterfallDialog (v2: i18n, 2× ConfirmPrompt)
+│   │   ├── registrationDialog.js WaterfallDialog, 9 Felder (v2: i18n, 2× ConfirmPrompt)
 │   │   └── validators.js         Validierung + normalize() + adaptive Hints
 │   └── services/
 │       ├── cluRecognizer.js      CLU-Client + DE/EN Regel-Fallback
@@ -121,10 +121,13 @@ voicebot/
 │       └── userRepository.js     MSSQL CRUD
 ├── voicebot-deploy.sh            Cloud-Deploy + Diagnose
 ├── voicebot-local.sh             Lokales Test-Setup
+├── tools/
+│   └── generate-projektdoku.js   Generator der Projektdokumentation (PDF)
 ├── docs/
 │   ├── ARCHITEKTUR.md            Architektur + Sequenzdiagramme
 │   ├── INSTALLATIONSANLEITUNG.md Schritt-für-Schritt Azure-Setup
-│   └── PRAESENTATION.html        15-Min-Präsentation (Browser)
+│   ├── SLIDES.html               Abschlusspräsentation (11 Folien, Browser)
+│   └── SPRECHERNOTIZEN.md        Sprechernotizen zur Präsentation
 └── .github/
     └── workflows/
         └── deploy.yml            CI/CD GitHub Actions

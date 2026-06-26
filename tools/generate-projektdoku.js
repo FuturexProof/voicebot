@@ -280,7 +280,7 @@ bullets([
   'public/index.html: WebChat-Frontend, laedt Direct-Line- und Speech-Token, DE/EN-Umschalter.',
   'index.js: Restify-Server, registriert alle HTTP-Routen und initialisiert den Bot-Adapter.',
   'src/bot.js: ActivityHandler, Sprach- und Tonerkennung, normalize(), CLU-Intent-Routing.',
-  'src/dialogs/registrationDialog.js: WaterfallDialog mit zehn Schritten und typisierten Prompts.',
+  'src/dialogs/registrationDialog.js: WaterfallDialog mit neun Abfragefeldern und typisierten Prompts.',
   'src/dialogs/validators.js: Validierung, normalize() und adaptive Hinweise via attemptCount.',
   'src/i18n/messages.js: alle Bot-Texte in DE, DE-formal und EN an einem Ort.',
   'src/services/cluRecognizer.js: CLU-Client mit DE/EN-Regel-Fallback.',
@@ -388,7 +388,7 @@ codeBlock(
 │   │   ├── routes.js             Admin-API (users, export, stats)
 │   │   └── dashboard.html        Admin-Dashboard
 │   ├── dialogs/
-│   │   ├── registrationDialog.js 10-Schritt-WaterfallDialog
+│   │   ├── registrationDialog.js WaterfallDialog (9 Felder)  
 │   │   └── validators.js         Validierung + normalize() + adaptive Hints
 │   └── services/
 │       ├── cluRecognizer.js      CLU-Client + DE/EN Regel-Fallback
