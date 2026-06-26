@@ -7,7 +7,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ── Hintergrund ──────────────────────────────────────────── */
+  /* Hintergrund */
   body {
     min-height: 100vh;
     display: flex;
@@ -21,7 +21,7 @@
     padding: 16px;
   }
 
-  /* ── Karte ────────────────────────────────────────────────── */
+  /* Karte */
   .card {
     width: 100%;
     max-width: 480px;
@@ -42,7 +42,7 @@
     to   { opacity: 1; transform: none; }
   }
 
-  /* ── Header ───────────────────────────────────────────────── */
+  /* Header */
   .header {
     background: linear-gradient(135deg, #004e92 0%, #0078d4 60%, #00a4ef 100%);
     padding: 18px 20px 16px;
@@ -123,7 +123,7 @@
     color: #fff;
   }
 
-  /* ── Lade-Overlay ─────────────────────────────────────────── */
+  /* Lade-Overlay */
   #loading {
     flex: 1;
     display: flex;
@@ -149,7 +149,7 @@
     font-size: .9rem;
   }
 
-  /* ── WebChat-Bereich ──────────────────────────────────────── */
+  /* WebChat-Bereich */
   #webchat {
     flex: 1;
     overflow: hidden;
@@ -162,7 +162,7 @@
     border-top: 1px solid #e8f0f8 !important;
   }
 
-  /* ── Fehler-Banner ────────────────────────────────────────── */
+  /* Fehler-Banner */
   #error-banner {
     display: none;
     background: #fdecea;
@@ -174,7 +174,7 @@
   }
   #error-banner.visible { display: block; }
 
-  /* ── Fußzeile ─────────────────────────────────────────────── */
+  /* Fußzeile */
   .footer {
     padding: 10px 20px;
     background: #f8fbff;
@@ -192,7 +192,7 @@
   }
   #footer-hint { transition: opacity .3s; }
 
-  /* ── Branding ─────────────────────────────────────────────── */
+  /* Branding */
   .brand {
     position: fixed;
     bottom: 12px; left: 50%;
@@ -251,7 +251,7 @@
   src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
 
 <script>
-// ── Übersetzungen für das UI ───────────────────────────────────
+// Übersetzungen für das UI
 const UI = {
   de: {
     title:     'Sprachbot',
@@ -276,7 +276,7 @@ const UI = {
 let store;
 let currentLang = localStorage.getItem('voicebot_lang') || 'de';
 
-// ── UI-Hilfsfunktionen ─────────────────────────────────────────
+// UI-Hilfsfunktionen
 function updateUI(lang) {
   const u = UI[lang] || UI.de;
   document.getElementById('header-title').textContent   = u.title;
@@ -302,7 +302,7 @@ function showError(lang) {
   document.getElementById('loading').classList.add('hidden');
 }
 
-// ── Sprachumschalter ───────────────────────────────────────────
+// Sprachumschalter
 function setLang(lang) {
   if (lang === currentLang) return;
   currentLang = lang;
@@ -318,7 +318,7 @@ function setLang(lang) {
   }
 }
 
-// ── WebChat initialisieren ─────────────────────────────────────
+// WebChat initialisieren
 (async function init() {
   updateUI(currentLang);
   document.getElementById('loading-text').textContent = (UI[currentLang] || UI.de).loading;
@@ -384,6 +384,8 @@ function setLang(lang) {
         bubbleBorderRadius:        12,
         bubbleFromUserBorderRadius:12,
         messageActivityWordBreak:  'break-word',
+        // Datei-Anhang (Büroklammer) ausblenden - hier nicht benötigt
+        hideUploadButton:          true,
         // Schrift
         primaryFont:               '\'Segoe UI\', system-ui, sans-serif',
         rootHeight:                '100%',
