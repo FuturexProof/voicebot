@@ -26,3 +26,7 @@ technische-Voicebot-Dokumentation-MK-SS2026.pdf
 Abgabe/
 aufgabe.txt
 
+
+# Deploy-/Test-Skripte lokal halten, nicht ins Repo
+voicebot-deploy.sh
+voicebot-local.sh
